@@ -30,7 +30,7 @@ public class FixImageView extends AppCompatImageView {
     }
 
     public void setOnImageViewListener(OnImageViewListener listener) {
-        mOnImageViewListener = listener;
+        mOnImageViewListener = null;
     }
 
     @Override

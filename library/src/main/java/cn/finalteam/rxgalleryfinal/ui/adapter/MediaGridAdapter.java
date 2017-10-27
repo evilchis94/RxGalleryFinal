@@ -106,6 +106,12 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
             } else {
                 holder.mCbCheck.setVisibility(View.VISIBLE);
                 holder.mCbCheck.setOnClickListener(new OnCheckBoxClickListener(mediaBean));
+                holder.mIvMediaImage.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        holder.mCbCheck.performClick();
+                    }
+                });
                 holder.mCbCheck.setOnCheckedChangeListener(new OnCheckBoxCheckListener(mediaBean));
             }
             holder.mIvMediaImage.setVisibility(View.VISIBLE);
@@ -130,7 +136,6 @@ public class MediaGridAdapter extends RecyclerView.Adapter<MediaGridAdapter.Grid
                     path = mediaBean.getOriginalPath();
                 }
             }
-            Logger.w("提示path：" + path);
             if (imageLoaderType != 3) {
                 OsCompat.setBackgroundDrawableCompat(holder.mIvMediaImage, mImageViewBg);
                 mConfiguration.getImageLoader()
