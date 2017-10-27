@@ -3,14 +3,13 @@ package cn.finalteam.rxgalleryfinal.ui.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 
 /**
  * Desction:为了兼容fresco框架而自定义的ImageView
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:2015/12/24 0024 20:14
  */
 public class FixImageView extends AppCompatImageView {
@@ -30,13 +29,21 @@ public class FixImageView extends AppCompatImageView {
     }
 
     public void setOnImageViewListener(OnImageViewListener listener) {
-        mOnImageViewListener = null;
+        mOnImageViewListener = listener;
+    }
+
+    public static interface OnImageViewListener {
+        void onDetach();
+        void onAttach();
+        boolean verifyDrawable(Drawable dr) ;
+        void onDraw(Canvas canvas);
+        boolean onTouchEvent(MotionEvent event);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        if (mOnImageViewListener != null) {
+        if(mOnImageViewListener != null) {
             mOnImageViewListener.onDetach();
         }
     }
@@ -44,14 +51,14 @@ public class FixImageView extends AppCompatImageView {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        if (mOnImageViewListener != null) {
+        if(mOnImageViewListener != null) {
             mOnImageViewListener.onAttach();
         }
     }
 
     @Override
-    protected boolean verifyDrawable(@NonNull Drawable dr) {
-        if (mOnImageViewListener != null) {
+    protected boolean verifyDrawable(Drawable dr) {
+        if(mOnImageViewListener != null) {
             if (mOnImageViewListener.verifyDrawable(dr)) {
                 return true;
             }
@@ -62,7 +69,7 @@ public class FixImageView extends AppCompatImageView {
     @Override
     public void onStartTemporaryDetach() {
         super.onStartTemporaryDetach();
-        if (mOnImageViewListener != null) {
+        if(mOnImageViewListener != null) {
             mOnImageViewListener.onDetach();
         }
     }
@@ -70,7 +77,7 @@ public class FixImageView extends AppCompatImageView {
     @Override
     public void onFinishTemporaryDetach() {
         super.onFinishTemporaryDetach();
-        if (mOnImageViewListener != null) {
+        if(mOnImageViewListener != null) {
             mOnImageViewListener.onAttach();
         }
     }
@@ -78,7 +85,7 @@ public class FixImageView extends AppCompatImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (mOnImageViewListener != null) {
+        if(mOnImageViewListener != null) {
 
             mOnImageViewListener.onDraw(canvas);
         }
@@ -86,22 +93,10 @@ public class FixImageView extends AppCompatImageView {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mOnImageViewListener == null) {
+        if(mOnImageViewListener == null){
             return super.onTouchEvent(event);
         }
         return mOnImageViewListener.onTouchEvent(event) || super.onTouchEvent(event);
-    }
-
-    public interface OnImageViewListener {
-        void onDetach();
-
-        void onAttach();
-
-        boolean verifyDrawable(Drawable dr);
-
-        void onDraw(Canvas canvas);
-
-        boolean onTouchEvent(MotionEvent event);
     }
 
 }

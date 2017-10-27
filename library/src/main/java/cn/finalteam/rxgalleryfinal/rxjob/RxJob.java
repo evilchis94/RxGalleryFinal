@@ -2,20 +2,20 @@ package cn.finalteam.rxgalleryfinal.rxjob;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/7/31 上午9:09
  */
 public class RxJob {
 
-    private static RxJob rxJob;
     private final JobManager jobManager;
+    private static RxJob rxJob;
 
-    private RxJob() {
+    public RxJob() {
         jobManager = new JobManager();
     }
 
     public static RxJob getDefault() {
-        if (rxJob == null) {
+        if(rxJob == null){
             rxJob = new RxJob();
         }
         return rxJob;

@@ -9,13 +9,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 /**
- * by yqritc on 2015/01/15.
+ * Created by yqritc on 2015/01/15.
  */
 public class HorizontalDividerItemDecoration extends FlexibleDividerDecoration {
 
-    private final MarginProvider mMarginProvider;
+    private MarginProvider mMarginProvider;
 
-    private HorizontalDividerItemDecoration(Builder builder) {
+    protected HorizontalDividerItemDecoration(Builder builder) {
         super(builder);
         mMarginProvider = builder.mMarginProvider;
     }

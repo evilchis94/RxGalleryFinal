@@ -8,7 +8,7 @@ import android.view.View;
 import cn.finalteam.rxgalleryfinal.R;
 
 public class MarginDecoration extends RecyclerView.ItemDecoration {
-    private final int margin;
+    private int margin;
 
     public MarginDecoration(Context context) {
         margin = context.getResources().getDimensionPixelSize(R.dimen.gallery_grid_item_margin);

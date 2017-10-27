@@ -4,14 +4,14 @@ import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/7/24 下午11:47
  */
 public class MediaCheckChangeEvent {
 
-    private final MediaBean mediaBean;
+    private MediaBean mediaBean;
 
-    public MediaCheckChangeEvent(MediaBean mediaBean) {
+    public MediaCheckChangeEvent(MediaBean mediaBean){
         this.mediaBean = mediaBean;
     }
 

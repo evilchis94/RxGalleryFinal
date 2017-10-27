@@ -5,28 +5,16 @@ import android.os.Parcelable;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/8/1 下午10:27
  */
 public class ImageCropBean extends MediaBean implements Parcelable {
-    public static final Creator<ImageCropBean> CREATOR = new Creator<ImageCropBean>() {
-        @Override
-        public ImageCropBean createFromParcel(Parcel in) {
-            return new ImageCropBean(in);
-        }
-
-        @Override
-        public ImageCropBean[] newArray(int size) {
-            return new ImageCropBean[size];
-        }
-    };
     private String cropPath;
     private float aspectRatio;
 
-    public ImageCropBean() {
-    }
+    public ImageCropBean(){}
 
-    private ImageCropBean(Parcel in) {
+    protected ImageCropBean(Parcel in) {
         super(in);
         cropPath = in.readString();
         aspectRatio = in.readFloat();
@@ -44,6 +32,18 @@ public class ImageCropBean extends MediaBean implements Parcelable {
         return 0;
     }
 
+    public static final Creator<ImageCropBean> CREATOR = new Creator<ImageCropBean>() {
+        @Override
+        public ImageCropBean createFromParcel(Parcel in) {
+            return new ImageCropBean(in);
+        }
+
+        @Override
+        public ImageCropBean[] newArray(int size) {
+            return new ImageCropBean[size];
+        }
+    };
+
     public String getCropPath() {
         return cropPath;
     }
@@ -60,8 +60,8 @@ public class ImageCropBean extends MediaBean implements Parcelable {
         this.aspectRatio = aspectRatio;
     }
 
-    public void copyMediaBean(MediaBean mediaBean) {
-        if (mediaBean != null) {
+    public void copyMediaBean(MediaBean mediaBean){
+        if(mediaBean != null){
             setId(mediaBean.getId());
             setTitle(mediaBean.getTitle());
             setOriginalPath(mediaBean.getOriginalPath());

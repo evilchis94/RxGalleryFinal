@@ -24,14 +24,17 @@ import cn.finalteam.rxgalleryfinal.utils.Logger;
 
 public class CupcakeGestureDetector implements GestureDetector {
 
-    private static final String LOG_TAG = "CupcakeGestureDetector";
-    final float mTouchSlop;
-    final float mMinimumVelocity;
     protected OnGestureListener mListener;
+    private static final String LOG_TAG = "CupcakeGestureDetector";
     float mLastTouchX;
     float mLastTouchY;
-    private VelocityTracker mVelocityTracker;
-    private boolean mIsDragging;
+    final float mTouchSlop;
+    final float mMinimumVelocity;
+
+    @Override
+    public void setOnGestureListener(OnGestureListener listener) {
+        this.mListener = listener;
+    }
 
     public CupcakeGestureDetector(Context context) {
         final ViewConfiguration configuration = ViewConfiguration
@@ -40,10 +43,8 @@ public class CupcakeGestureDetector implements GestureDetector {
         mTouchSlop = configuration.getScaledTouchSlop();
     }
 
-    @Override
-    public void setOnGestureListener(OnGestureListener listener) {
-        this.mListener = listener;
-    }
+    private VelocityTracker mVelocityTracker;
+    private boolean mIsDragging;
 
     float getActiveX(MotionEvent ev) {
         return ev.getX();

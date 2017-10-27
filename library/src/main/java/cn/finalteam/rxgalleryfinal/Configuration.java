@@ -22,22 +22,14 @@ import cn.finalteam.rxgalleryfinal.imageloader.UniversalImageLoader;
 
 /**
  * Desction:配置信息
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/5/7 下午3:58
  */
-public class Configuration implements Parcelable {
+public class Configuration implements Parcelable{
 
-    public static final Creator<Configuration> CREATOR = new Creator<Configuration>() {
-        @Override
-        public Configuration createFromParcel(Parcel in) {
-            return new Configuration(in);
-        }
+    protected Configuration() {
+    }
 
-        @Override
-        public Configuration[] newArray(int size) {
-            return new Configuration[size];
-        }
-    };
     private boolean image = true;
     private Context context;
     private List<MediaBean> selectedList;
@@ -48,17 +40,15 @@ public class Configuration implements Parcelable {
     private int imageLoaderType;
     private int imageConfig;
     private boolean hideCamera;
-    private boolean isPlayGif;
-    private boolean hidePreview;
-    private boolean isVideoPreview;
-
+    private boolean openCameraOnStart = false;
+    private boolean returnAfterShot = false;
     //==========UCrop START==========
     //是否隐藏裁剪页面底部控制栏,默认显示
     private boolean hideBottomControls;
     //图片压缩质量,默认不压缩
     private int compressionQuality = 90;
     //手势方式,默认all
-    private int[] gestures;
+    private int []gestures;
     //设置图片最大值,默认根据屏幕得出
     private int maxBitmapSize = CropImageView.DEFAULT_MAX_BITMAP_SIZE;
     //设置最大缩放值,默认10.f
@@ -69,20 +59,17 @@ public class Configuration implements Parcelable {
     //等比缩放默认值索引,默认原图比例
     private int selectedByDefault;
     //等比缩放值表,默认1:1,3:4,原图比例,3:2,16:9
-    private AspectRatio[] aspectRatio;
+    private AspectRatio []aspectRatio;
     //是否允许改变裁剪大小
     private boolean freestyleCropEnabled = OverlayView.DEFAULT_FREESTYLE_CROP_ENABLED;
     //是否显示裁剪框半透明椭圆浮层
-    private boolean ovalDimmedLayer = OverlayView.DEFAULT_CIRCLE_DIMMED_LAYER;//DEFAULT_OVAL_DIMMED_LAYER
+    private boolean ovalDimmedLayer = OverlayView.DEFAULT_OVAL_DIMMED_LAYER;
     private int maxResultWidth;
     private int maxResultHeight;
 
     //==========UCrop END==========
     //设置显示标题
     private String title = null;
-    protected Configuration() {
-    }
-
     protected Configuration(Parcel in) {
         image = in.readByte() != 0;
         selectedList = in.createTypedArrayList(MediaBean.CREATOR);
@@ -105,27 +92,22 @@ public class Configuration implements Parcelable {
         imageLoaderType = in.readInt();
         imageConfig = in.readInt();
         hideCamera = in.readByte() != 0;
-        isPlayGif = in.readByte() != 0;
-        hidePreview = in.readByte() != 0;
-        isVideoPreview = in.readByte() != 0;
+        openCameraOnStart = in.readByte() != 0;
         title = in.readString();
+        returnAfterShot = in.readByte() != 0;
     }
 
-    public boolean isHidePreview() {
-        return hidePreview;
-    }
+    public static final Creator<Configuration> CREATOR = new Creator<Configuration>() {
+        @Override
+        public Configuration createFromParcel(Parcel in) {
+            return new Configuration(in);
+        }
 
-    public void setHidePreview(boolean hidePreview) {
-        this.hidePreview = hidePreview;
-    }
-
-    public boolean isPlayGif() {
-        return isPlayGif;
-    }
-
-    public void setPlayGif(boolean playGif) {
-        isPlayGif = playGif;
-    }
+        @Override
+        public Configuration[] newArray(int size) {
+            return new Configuration[size];
+        }
+    };
 
     public boolean isImage() {
         return image;
@@ -175,18 +157,25 @@ public class Configuration implements Parcelable {
         this.hideCamera = hideCamera;
     }
 
-    //#ADD
-    public int getImageLoaderType() {
-        return imageLoaderType;
+    public boolean isOpenCameraOnStart() {
+        return openCameraOnStart;
     }
 
-    protected void setImageLoaderType(int imageLoaderType) {
-        this.imageLoaderType = imageLoaderType;
+    public void setOpenCameraOnStart(boolean openCameraOnStart) {
+        this.openCameraOnStart = openCameraOnStart;
+    }
+
+    public boolean isReturnAfterShot() {
+        return returnAfterShot;
+    }
+
+    public void setReturnAfterShot(boolean returnAfterShot) {
+        this.returnAfterShot = returnAfterShot;
     }
 
     public AbsImageLoader getImageLoader() {
         AbsImageLoader imageLoader = null;
-        switch (imageLoaderType) {
+        switch (imageLoaderType){
             case 1:
                 imageLoader = new PicassoImageLoader();
                 break;
@@ -206,8 +195,12 @@ public class Configuration implements Parcelable {
         return imageLoader;
     }
 
+    protected void setImageLoaderType(int imageLoaderType) {
+        this.imageLoaderType = imageLoaderType;
+    }
+
     public Bitmap.Config getImageConfig() {
-        switch (imageConfig) {
+        switch (imageConfig){
             case 1:
                 return Bitmap.Config.ALPHA_8;
             case 2:
@@ -240,12 +233,20 @@ public class Configuration implements Parcelable {
         this.compressionQuality = compressionQuality;
     }
 
-    public int[] getAllowedGestures() {
-        return gestures;
+    public String getTitle() {
+        return title;
     }
 
-    public void setAllowedGestures(@UCropActivity.GestureTypes int[] gestures) {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setAllowedGestures(@UCropActivity.GestureTypes int []gestures) {
         this.gestures = gestures;
+    }
+
+    public int[] getAllowedGestures() {
+        return gestures;
     }
 
     public int getMaxBitmapSize() {
@@ -366,25 +367,8 @@ public class Configuration implements Parcelable {
         parcel.writeInt(imageLoaderType);
         parcel.writeInt(imageConfig);
         parcel.writeByte((byte) (hideCamera ? 1 : 0));
-        parcel.writeByte((byte) (isPlayGif ? 1 : 0));
-        parcel.writeByte((byte) (hidePreview ? 1 : 0));
-        parcel.writeByte((byte) (isVideoPreview ? 1 : 0));
+        parcel.writeByte((byte) (openCameraOnStart ? 1 : 0));
         parcel.writeString(title);
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public boolean isVideoPreview() {
-        return isVideoPreview;
-    }
-
-    public void setVideoPreview(boolean videoPreview) {
-        isVideoPreview = videoPreview;
+        parcel.writeByte((byte) (returnAfterShot ? 1 : 0));
     }
 }

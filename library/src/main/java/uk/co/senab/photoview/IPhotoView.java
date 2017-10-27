@@ -80,6 +80,64 @@ public interface IPhotoView {
     float getMinScale();
 
     /**
+     * @return The current minimum scale level. What this value represents depends on the current
+     * {@link ImageView.ScaleType}.
+     */
+    float getMinimumScale();
+
+    /**
+     * Use {@link #getMediumScale()} instead, this will be removed in future release
+     *
+     * @return The current middle scale level. What this value represents depends on the current
+     * {@link ImageView.ScaleType}.
+     */
+    @Deprecated
+    float getMidScale();
+
+    /**
+     * @return The current medium scale level. What this value represents depends on the current
+     * {@link ImageView.ScaleType}.
+     */
+    float getMediumScale();
+
+    /**
+     * Use {@link #getMaximumScale()} instead, this will be removed in future release
+     *
+     * @return The current maximum scale level. What this value represents depends on the current
+     * {@link ImageView.ScaleType}.
+     */
+    @Deprecated
+    float getMaxScale();
+
+    /**
+     * @return The current maximum scale level. What this value represents depends on the current
+     * {@link ImageView.ScaleType}.
+     */
+    float getMaximumScale();
+
+    /**
+     * Returns the current scale value
+     *
+     * @return float - current scale value
+     */
+    float getScale();
+
+    /**
+     * Return the current scale type in use by the ImageView.
+     *
+     * @return current ImageView.ScaleType
+     */
+    ImageView.ScaleType getScaleType();
+
+    /**
+     * Whether to allow the ImageView's parent to intercept the touch event when the photo is scroll
+     * to it's horizontal edge.
+     *
+     * @param allow whether to allow intercepting by parent element or not
+     */
+    void setAllowParentInterceptOnEdge(boolean allow);
+
+    /**
      * Use {@link #setMinimumScale(float minimumScale)} instead, this will be removed in future
      * release
      * <p>&nbsp;</p>
@@ -92,27 +150,12 @@ public interface IPhotoView {
     void setMinScale(float minScale);
 
     /**
-     * @return The current minimum scale level. What this value represents depends on the current
-     * {@link ImageView.ScaleType}.
-     */
-    float getMinimumScale();
-
-    /**
      * Sets the minimum scale level. What this value represents depends on the current {@link
      * ImageView.ScaleType}.
      *
      * @param minimumScale minimum allowed scale
      */
     void setMinimumScale(float minimumScale);
-
-    /**
-     * Use {@link #getMediumScale()} instead, this will be removed in future release
-     *
-     * @return The current middle scale level. What this value represents depends on the current
-     * {@link ImageView.ScaleType}.
-     */
-    @Deprecated
-    float getMidScale();
 
     /**
      * Use {@link #setMediumScale(float mediumScale)} instead, this will be removed in future
@@ -127,26 +170,11 @@ public interface IPhotoView {
     void setMidScale(float midScale);
 
     /**
-     * @return The current medium scale level. What this value represents depends on the current
-     * {@link ImageView.ScaleType}.
-     */
-    float getMediumScale();
-
-    /**
      * Sets the medium scale level. What this value represents depends on the current {@link ImageView.ScaleType}.
      *
      * @param mediumScale medium scale preset
      */
     void setMediumScale(float mediumScale);
-
-    /**
-     * Use {@link #getMaximumScale()} instead, this will be removed in future release
-     *
-     * @return The current maximum scale level. What this value represents depends on the current
-     * {@link ImageView.ScaleType}.
-     */
-    @Deprecated
-    float getMaxScale();
 
     /**
      * Use {@link #setMaximumScale(float maximumScale)} instead, this will be removed in future
@@ -161,56 +189,12 @@ public interface IPhotoView {
     void setMaxScale(float maxScale);
 
     /**
-     * @return The current maximum scale level. What this value represents depends on the current
-     * {@link ImageView.ScaleType}.
-     */
-    float getMaximumScale();
-
-    /**
      * Sets the maximum scale level. What this value represents depends on the current {@link
      * ImageView.ScaleType}.
      *
      * @param maximumScale maximum allowed scale preset
      */
     void setMaximumScale(float maximumScale);
-
-    /**
-     * Returns the current scale value
-     *
-     * @return float - current scale value
-     */
-    float getScale();
-
-    /**
-     * Changes the current scale to the specified value.
-     *
-     * @param scale - Value to scale to
-     */
-    void setScale(float scale);
-
-    /**
-     * Return the current scale type in use by the ImageView.
-     *
-     * @return current ImageView.ScaleType
-     */
-    ImageView.ScaleType getScaleType();
-
-    /**
-     * Controls how the image should be resized or moved to match the size of the ImageView. Any
-     * scaling or panning will happen within the confines of this {@link
-     * ImageView.ScaleType}.
-     *
-     * @param scaleType - The desired scaling mode.
-     */
-    void setScaleType(ImageView.ScaleType scaleType);
-
-    /**
-     * Whether to allow the ImageView's parent to intercept the touch event when the photo is scroll
-     * to it's horizontal edge.
-     *
-     * @param allow whether to allow intercepting by parent element or not
-     */
-    void setAllowParentInterceptOnEdge(boolean allow);
 
     /**
      * Allows to set all three scale levels at once, so you don't run into problem with setting
@@ -238,6 +222,14 @@ public interface IPhotoView {
     void setOnMatrixChangeListener(PhotoViewAttacher.OnMatrixChangedListener listener);
 
     /**
+     * Register a callback to be invoked when the Photo displayed by this View is tapped with a
+     * single tap.
+     *
+     * @param listener - Listener to be registered.
+     */
+    void setOnPhotoTapListener(PhotoViewAttacher.OnPhotoTapListener listener);
+
+    /**
      * PhotoViewAttacher.OnPhotoTapListener reference should be stored in a variable instead, this
      * will be removed in future release.
      * <p>&nbsp;</p>
@@ -250,12 +242,11 @@ public interface IPhotoView {
     PhotoViewAttacher.OnPhotoTapListener getOnPhotoTapListener();
 
     /**
-     * Register a callback to be invoked when the Photo displayed by this View is tapped with a
-     * single tap.
+     * Register a callback to be invoked when the View is tapped with a single tap.
      *
      * @param listener - Listener to be registered.
      */
-    void setOnPhotoTapListener(PhotoViewAttacher.OnPhotoTapListener listener);
+    void setOnViewTapListener(PhotoViewAttacher.OnViewTapListener listener);
 
     /**
      * Enables rotation via PhotoView internal functions.
@@ -283,11 +274,11 @@ public interface IPhotoView {
     PhotoViewAttacher.OnViewTapListener getOnViewTapListener();
 
     /**
-     * Register a callback to be invoked when the View is tapped with a single tap.
+     * Changes the current scale to the specified value.
      *
-     * @param listener - Listener to be registered.
+     * @param scale - Value to scale to
      */
-    void setOnViewTapListener(PhotoViewAttacher.OnViewTapListener listener);
+    void setScale(float scale);
 
     /**
      * Changes the current scale to the specified value.
@@ -306,6 +297,15 @@ public interface IPhotoView {
      * @param animate - Whether to animate the scale
      */
     void setScale(float scale, float focalX, float focalY, boolean animate);
+
+    /**
+     * Controls how the image should be resized or moved to match the size of the ImageView. Any
+     * scaling or panning will happen within the confines of this {@link
+     * ImageView.ScaleType}.
+     *
+     * @param scaleType - The desired scaling mode.
+     */
+    void setScaleType(ImageView.ScaleType scaleType);
 
     /**
      * Allows you to enable/disable the zoom functionality on the ImageView. When disable the

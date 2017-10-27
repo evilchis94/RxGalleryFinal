@@ -15,38 +15,37 @@ import com.yalantis.ucrop.model.AspectRatio;
 import java.util.List;
 
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
+import cn.finalteam.rxgalleryfinal.exception.UnknownImageLoaderTypeException;
 import cn.finalteam.rxgalleryfinal.imageloader.ImageLoaderType;
 import cn.finalteam.rxgalleryfinal.rxbus.RxBus;
-import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultDisposable;
+import cn.finalteam.rxgalleryfinal.rxbus.RxBusResultSubscriber;
 import cn.finalteam.rxgalleryfinal.rxbus.event.BaseResultEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageMultipleResultEvent;
 import cn.finalteam.rxgalleryfinal.rxbus.event.ImageRadioResultEvent;
 import cn.finalteam.rxgalleryfinal.ui.activity.MediaActivity;
-import cn.finalteam.rxgalleryfinal.utils.Logger;
-import cn.finalteam.rxgalleryfinal.utils.ModelUtils;
 import cn.finalteam.rxgalleryfinal.utils.StorageUtils;
-import io.reactivex.disposables.Disposable;
+import rx.Subscription;
 
 /**
- * Desction: RxGalleryFinal
- * author: pengjianbo  Dujinyang
- * author: karl-dujinyang
+ * Desction:
+ * Author:pengjianbo
+ * Date:16/5/7 下午4:20
  */
 public class RxGalleryFinal {
 
-    private Configuration configuration = new Configuration();
-    private RxBusResultDisposable<BaseResultEvent> isRadioDisposable;
+    private RxGalleryFinal(){}
 
-    private RxGalleryFinal() {
-    }
+    Configuration configuration = new Configuration();
+    static RxGalleryFinal instance;
+    RxBusResultSubscriber<BaseResultEvent> rxBusResultSubscriber;
 
     public static RxGalleryFinal with(@NonNull Context context) {
-        RxGalleryFinal instance = new RxGalleryFinal();
-        instance.configuration.setContext(context.getApplicationContext());
+        instance = new RxGalleryFinal();
+        instance.configuration.setContext(context);
         return instance;
     }
 
-    public RxGalleryFinal image() {
+    public RxGalleryFinal image(){
         configuration.setImage(true);
         return this;
     }
@@ -61,27 +60,7 @@ public class RxGalleryFinal {
 //        return this;
 //    }
 
-    public RxGalleryFinal gif() {
-        configuration.setPlayGif(true);
-        return this;
-    }
-
-    public RxGalleryFinal hidePreview() {
-        configuration.setHidePreview(true);
-        return this;
-    }
-
-    public RxGalleryFinal videoPreview() {
-        configuration.setVideoPreview(true);
-        return this;
-    }
-
-    public RxGalleryFinal gif(boolean flag) {
-        configuration.setPlayGif(flag);
-        return this;
-    }
-
-    public RxGalleryFinal radio() {
+    public RxGalleryFinal radio(){
         configuration.setRadio(true);
         return this;
     }
@@ -91,17 +70,12 @@ public class RxGalleryFinal {
         return this;
     }
 
-    public RxGalleryFinal crop() {
+    public RxGalleryFinal crop(){
         configuration.setCrop(true);
         return this;
     }
 
-    public RxGalleryFinal crop(boolean flag) {
-        configuration.setCrop(flag);
-        return this;
-    }
-
-    public RxGalleryFinal maxSize(@IntRange(from = 1) int maxSize) {
+    public RxGalleryFinal maxSize(@IntRange(from = 1) int maxSize){
         configuration.setMaxSize(maxSize);
         return this;
     }
@@ -111,18 +85,9 @@ public class RxGalleryFinal {
         return this;
     }
 
-    /**
-     * 设置显示标题
-     * @return
-     */
-    public RxGalleryFinal setTitle(String title) {
-        configuration.setTitle(title);
-        return this;
-    }
-
     public RxGalleryFinal imageConfig(@NonNull Bitmap.Config config) {
         int c = 3;
-        switch (config) {
+        switch (config){
             case ALPHA_8:
                 c = 1;
                 break;
@@ -136,19 +101,21 @@ public class RxGalleryFinal {
                 c = 4;
                 break;
         }
+
         configuration.setImageConfig(c);
+
         return this;
     }
 
     public RxGalleryFinal imageLoader(@NonNull ImageLoaderType imageLoaderType) {
         int type = 0;
-        if (imageLoaderType == ImageLoaderType.PICASSO) {
+        if(imageLoaderType == ImageLoaderType.PICASSO){
             type = 1;
-        } else if (imageLoaderType == ImageLoaderType.GLIDE) {
+        } else if(imageLoaderType == ImageLoaderType.GLIDE){
             type = 2;
-        } else if (imageLoaderType == ImageLoaderType.FRESCO) {
+        } else if(imageLoaderType == ImageLoaderType.FRESCO){
             type = 3;
-        } else if (imageLoaderType == ImageLoaderType.UNIVERSAL) {
+        } else if(imageLoaderType == ImageLoaderType.UNIVERSAL){
             type = 4;
         }
         configuration.setImageLoaderType(type);
@@ -157,6 +124,7 @@ public class RxGalleryFinal {
 
     /**
      * 隐藏相机
+     * @return
      */
     public RxGalleryFinal hideCamera() {
         configuration.setHideCamera(true);
@@ -164,7 +132,26 @@ public class RxGalleryFinal {
     }
 
     /**
+     * 直接打开相机
+     * @return
+     */
+    public RxGalleryFinal openCameraOnStart() {
+        configuration.setOpenCameraOnStart(true);
+        return this;
+    }
+
+    /**
+     * 拍摄后，直接返回图片
+     * @return
+     */
+    public RxGalleryFinal returnAfterShot() {
+        configuration.setReturnAfterShot(true);
+        return this;
+    }
+    /**
      * set to true to hide the bottom controls (shown by default)
+     * @param hide
+     * @return
      */
     public RxGalleryFinal cropHideBottomControls(boolean hide) {
         configuration.setHideBottomControls(hide);
@@ -173,6 +160,7 @@ public class RxGalleryFinal {
 
     /**
      * Set compression quality [0-100] that will be used to save resulting Bitmap.
+     * @param compressQuality
      */
     public RxGalleryFinal cropropCompressionQuality(@IntRange(from = 0) int compressQuality) {
         configuration.setCompressionQuality(compressQuality);
@@ -181,10 +169,13 @@ public class RxGalleryFinal {
 
     /**
      * Choose what set of gestures will be enabled on each tab - if any.
+     * @param tabScale
+     * @param tabRotate
+     * @param tabAspectRatio
      */
     public RxGalleryFinal cropAllowedGestures(@UCropActivity.GestureTypes int tabScale,
-                                              @UCropActivity.GestureTypes int tabRotate,
-                                              @UCropActivity.GestureTypes int tabAspectRatio) {
+                                   @UCropActivity.GestureTypes int tabRotate,
+                                   @UCropActivity.GestureTypes int tabAspectRatio) {
         configuration.setAllowedGestures(new int[]{tabScale, tabRotate, tabAspectRatio});
         return this;
     }
@@ -246,6 +237,7 @@ public class RxGalleryFinal {
 
     /**
      * set to true to let user resize crop bounds (disabled by default)
+     * @param enabled
      */
     public RxGalleryFinal cropFreeStyleCropEnabled(boolean enabled) {
         configuration.setFreestyleCropEnabled(enabled);
@@ -254,6 +246,7 @@ public class RxGalleryFinal {
 
     /**
      * set it to true if you want dimmed layer to have an oval inside
+     * @param isOval
      */
     public RxGalleryFinal cropOvalDimmedLayer(boolean isOval) {
         configuration.setOvalDimmedLayer(isOval);
@@ -262,6 +255,8 @@ public class RxGalleryFinal {
 
     /**
      * 设置裁剪结果最大宽度和高度
+     * @param width
+     * @param height
      */
     public RxGalleryFinal cropMaxResultSize(@IntRange(from = 100) int width, @IntRange(from = 100) int height) {
         configuration.setMaxResultSize(width, height);
@@ -269,51 +264,57 @@ public class RxGalleryFinal {
     }
 
     /**
-     * 设置回调
+     * 设置显示标题
+     * @return
      */
-    public RxGalleryFinal subscribe(@NonNull RxBusResultDisposable<? extends BaseResultEvent> rxBusResultSubscriber) {
-        this.isRadioDisposable = (RxBusResultDisposable<BaseResultEvent>) rxBusResultSubscriber;
+    public RxGalleryFinal setTitle(String title) {
+        configuration.setTitle(title);
+        return this;
+    }
+    /**
+     * 设置回调
+     * @param rxBusResultSubscriber
+     * @return
+     */
+    public RxGalleryFinal subscribe(@NonNull RxBusResultSubscriber<? extends BaseResultEvent> rxBusResultSubscriber) {
+        this.rxBusResultSubscriber = (RxBusResultSubscriber<BaseResultEvent>) rxBusResultSubscriber;
         return this;
     }
 
 
-    public void openGallery() {
-        //提示
-        ModelUtils.logDebug();
+    public void openGallery(){
         execute();
     }
 
-    /**
-     * 执行
-     */
     private void execute() {
         Context context = configuration.getContext();
-        if (context == null) {
+        if(context == null) {
             return;
         }
-        if (!StorageUtils.existSDcard()) {
-            Logger.i("没有找到SD卡");
+        if(!StorageUtils.existSDcard()){
             Toast.makeText(context, "没有找到SD卡", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        if (configuration.getImageLoader() == null) {
-            throw new NullPointerException("imageLoader == null , please check imageLoader");
+        if(configuration.getImageLoader() == null) {
+            throw new UnknownImageLoaderTypeException();
         }
-        if (isRadioDisposable == null) {
+
+        if(rxBusResultSubscriber == null){
             return;
         }
-        Disposable disposable;
-        if (configuration.isRadio()) {
-            disposable = RxBus.getDefault()
+
+        Subscription subscription;
+        if(configuration.isRadio()) {
+            subscription = RxBus.getDefault()
                     .toObservable(ImageRadioResultEvent.class)
-                    .subscribeWith(isRadioDisposable);
+                    .subscribe(rxBusResultSubscriber);
         } else {
-            disposable = RxBus.getDefault()
+            subscription = RxBus.getDefault()
                     .toObservable(ImageMultipleResultEvent.class)
-                    .subscribeWith(isRadioDisposable);
+                    .subscribe(rxBusResultSubscriber);
         }
-        RxBus.getDefault().add(disposable);
+        RxBus.getDefault().add(subscription);
 
         Intent intent = new Intent(context, MediaActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -322,6 +323,5 @@ public class RxGalleryFinal {
         intent.putExtras(bundle);
         context.startActivity(intent);
     }
-
 
 }

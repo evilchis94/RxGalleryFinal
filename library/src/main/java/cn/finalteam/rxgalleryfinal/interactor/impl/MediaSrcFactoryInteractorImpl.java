@@ -7,22 +7,21 @@ import java.util.List;
 import cn.finalteam.rxgalleryfinal.bean.MediaBean;
 import cn.finalteam.rxgalleryfinal.interactor.MediaSrcFactoryInteractor;
 import cn.finalteam.rxgalleryfinal.utils.MediaUtils;
-import io.reactivex.Observable;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableObserver;
-import io.reactivex.schedulers.Schedulers;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/5/14 上午11:08
  */
 public class MediaSrcFactoryInteractorImpl implements MediaSrcFactoryInteractor {
 
-    private final Context context;
-    private final OnGenerateMediaListener onGenerateMediaListener;
-    private final boolean isImage;
+    Context context;
+    OnGenerateMediaListener onGenerateMediaListener;
+    boolean isImage;
 
     public MediaSrcFactoryInteractorImpl(Context context, boolean isImage, OnGenerateMediaListener onGenerateMediaListener) {
         this.context = context;
@@ -32,32 +31,32 @@ public class MediaSrcFactoryInteractorImpl implements MediaSrcFactoryInteractor 
 
     @Override
     public void generateMeidas(final String bucketId, final int page, final int limit) {
-        Observable.create((ObservableOnSubscribe<List<MediaBean>>) subscriber -> {
+        Observable.create((Observable.OnSubscribe<List<MediaBean>>) subscriber -> {
             List<MediaBean> mediaBeanList = null;
-            if (isImage) {
+            if(isImage) {
                 mediaBeanList = MediaUtils.getMediaWithImageList(context, bucketId, page, limit);
             } else {
                 mediaBeanList = MediaUtils.getMediaWithVideoList(context, bucketId, page, limit);
             }
             subscriber.onNext(mediaBeanList);
-            subscriber.onComplete();
+            subscriber.onCompleted();
         })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new DisposableObserver<List<MediaBean>>() {
-                    @Override
-                    public void onComplete() {
-                    }
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+        .subscribe(new Observer<List<MediaBean>>() {
+            @Override
+            public void onCompleted() {
+            }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        onGenerateMediaListener.onFinished(bucketId, page, limit, null);
-                    }
+            @Override
+            public void onError(Throwable e) {
+                onGenerateMediaListener.onFinished(bucketId, page, limit, null);
+            }
 
-                    @Override
-                    public void onNext(List<MediaBean> mediaBeenList) {
-                        onGenerateMediaListener.onFinished(bucketId, page, limit, mediaBeenList);
-                    }
-                });
+            @Override
+            public void onNext(List<MediaBean> mediaBeenList) {
+                onGenerateMediaListener.onFinished(bucketId, page, limit, mediaBeenList);
+            }
+        });
     }
 }

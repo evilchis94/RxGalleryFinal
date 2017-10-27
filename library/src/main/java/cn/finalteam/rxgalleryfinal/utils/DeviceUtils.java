@@ -6,7 +6,7 @@ import android.view.WindowManager;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/8/8 下午11:05
  */
 public class DeviceUtils {

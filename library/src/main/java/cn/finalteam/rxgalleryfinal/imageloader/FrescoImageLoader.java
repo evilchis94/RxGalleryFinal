@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.view.MotionEvent;
-import android.widget.RelativeLayout;
 
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -15,47 +14,21 @@ import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeHolder;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
-import com.facebook.imagepipeline.common.RotationOptions;
 import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 
 import cn.finalteam.rxgalleryfinal.ui.widget.FixImageView;
-import cn.finalteam.rxgalleryfinal.ui.widget.SquareRelativeLayout;
 
 /**
- * Created by pengjianbo  Dujinyang on 2016/8/13 0013.
+ * Created by pengjianbo on 2016/8/13 0013.
  */
 public class FrescoImageLoader implements AbsImageLoader {
 
     private DraweeHolder<GenericDraweeHierarchy> draweeHolder;
 
-    public static void setImageSmall(String url,
-                                     SimpleDraweeView simpleDraweeView,
-                                     int width,
-                                     int height,
-                                     SquareRelativeLayout relativeLayout, boolean playGif) {
-
-        Uri uri = Uri.parse(url);
-        ImageRequest request = ImageRequestBuilder
-                .newBuilderWithSource(uri)
-                .setRotationOptions(RotationOptions.autoRotate())
-                .setResizeOptions(new ResizeOptions(width, height))
-                .setLowestPermittedRequestLevel(ImageRequest.RequestLevel.FULL_FETCH)
-                .build();
-        DraweeController controller = Fresco.newDraweeControllerBuilder()
-                .setTapToRetryEnabled(true)
-                .setImageRequest(request)
-                .setAutoPlayAnimations(playGif)
-                .setOldController(simpleDraweeView.getController())
-                .build();
-        relativeLayout.setLayoutParams(new RelativeLayout.LayoutParams(width - 5, height));
-        simpleDraweeView.setController(controller);
-    }
-
     private void init(Context ctx, Drawable defaultDrawable) {
-        if (draweeHolder == null) {
+        if(draweeHolder == null) {
             Resources resources = ctx.getResources();
             GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(resources)
                     .setPlaceholderImage(defaultDrawable)
@@ -66,16 +39,9 @@ public class FrescoImageLoader implements AbsImageLoader {
     }
 
     @Override
-    public void displayImage(Context context,
-                             String path,
-                             FixImageView imageView,
-                             Drawable defaultDrawable,
-                             Bitmap.Config config,
-                             boolean resize, boolean isGif,
-                             int width,
-                             int height,
-                             int rotate) {
-        init(context, defaultDrawable);
+    public void displayImage(Object context, String path, FixImageView imageView, Drawable defaultDrawable, Bitmap.Config config, boolean resize, int width, int height, int rotate) {
+        Context ctx = (Context) context;
+        init(ctx, defaultDrawable);
 
         imageView.setOnImageViewListener(new FixImageView.OnImageViewListener() {
             @Override
@@ -90,7 +56,10 @@ public class FrescoImageLoader implements AbsImageLoader {
 
             @Override
             public boolean verifyDrawable(Drawable dr) {
-                return dr == draweeHolder.getHierarchy().getTopLevelDrawable();
+                if (dr == draweeHolder.getHierarchy().getTopLevelDrawable()) {
+                    return true;
+                }
+                return false;
             }
 
             @Override
@@ -113,8 +82,8 @@ public class FrescoImageLoader implements AbsImageLoader {
                 .path(path)
                 .build();
         ImageRequestBuilder builder = ImageRequestBuilder.newBuilderWithSource(uri)
-                .setRotationOptions(RotationOptions.autoRotate());
-        if (resize) {
+                .setAutoRotateEnabled(true);
+        if(resize){
             builder.setResizeOptions(new ResizeOptions(width, height));
         }
         ImageRequest request = builder.build();

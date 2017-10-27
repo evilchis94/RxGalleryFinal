@@ -6,14 +6,14 @@ import cn.finalteam.rxgalleryfinal.bean.BucketBean;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/7/4 下午8:24
  */
 public interface MediaBucketFactoryInteractor {
 
-    void generateBuckets();
-
     interface OnGenerateBucketListener {
         void onFinished(List<BucketBean> list);
     }
+
+    void generateBuckets();
 }

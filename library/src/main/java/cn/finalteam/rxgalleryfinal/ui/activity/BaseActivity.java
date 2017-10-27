@@ -2,6 +2,9 @@ package cn.finalteam.rxgalleryfinal.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.os.StrictMode;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -12,13 +15,13 @@ import cn.finalteam.rxgalleryfinal.utils.Logger;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/5/16 下午7:36
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
     public static final String EXTRA_PREFIX = BuildConfig.APPLICATION_ID;
-    public static final String EXTRA_CONFIGURATION = EXTRA_PREFIX + ".Configuration";
+    public static final String EXTRA_CONFIGURATION = EXTRA_PREFIX +".Configuration";
 
     private final String CLASS_NAME = getClass().getSimpleName();
 
@@ -27,25 +30,29 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StrictMode.VmPolicy.Builder builder = new StrictMode.VmPolicy.Builder();
+        StrictMode.setVmPolicy(builder.build());
+        
         printActivityLife("onCreate");
         Intent intent = getIntent();
         Bundle bundle = null;
-        if (intent != null) {
+        if(intent != null){
             bundle = intent.getExtras();
         }
 
 
-        if (savedInstanceState != null) {
+        if(savedInstanceState != null){
             mConfiguration = savedInstanceState.getParcelable(EXTRA_CONFIGURATION);
         }
-        if (mConfiguration == null && bundle != null) {
+        if(mConfiguration == null && bundle != null) {
             mConfiguration = bundle.getParcelable(EXTRA_CONFIGURATION);
         }
 
-        if (mConfiguration == null) {
-            finish();
+        if(mConfiguration == null){
+            mFinishHanlder.sendEmptyMessage(0);
         } else {
-            if (bundle == null) {
+            if(bundle == null){
                 bundle = savedInstanceState;
             }
             setContentView(getContentView());
@@ -106,9 +113,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     public abstract void findViews();
 
+    protected Handler mFinishHanlder = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            finish();
+        }
+    };
+
     protected abstract void setTheme();
 
-    private void printActivityLife(String method) {
+    private void printActivityLife(String method){
         Logger.i(String.format("Activity:%s Method:%s", CLASS_NAME, method));
     }
 }

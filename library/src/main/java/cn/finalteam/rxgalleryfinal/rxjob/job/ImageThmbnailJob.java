@@ -11,13 +11,13 @@ import cn.finalteam.rxgalleryfinal.utils.MediaUtils;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/7/31 上午11:46
  */
 public class ImageThmbnailJob implements Job {
 
-    private final MediaBean mediaBean;
-    private final Context context;
+    private MediaBean mediaBean;
+    private Context context;
 
     public ImageThmbnailJob(Context context, Params params) {
         this.context = context;
@@ -29,10 +29,10 @@ public class ImageThmbnailJob implements Job {
         String originalPath = mediaBean.getOriginalPath();
         File bigThumFile = MediaUtils.createThumbnailBigFileName(context, originalPath);
         File smallThumFile = MediaUtils.createThumbnailSmallFileName(context, originalPath);
-        if (!bigThumFile.exists()) {
+        if(!smallThumFile.exists()){
             BitmapUtils.createThumbnailBig(bigThumFile, originalPath);
         }
-        if (!smallThumFile.exists()) {
+        if(!bigThumFile.exists()){
             BitmapUtils.createThumbnailSmall(smallThumFile, originalPath);
         }
         Result result = Result.SUCCESS;

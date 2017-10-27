@@ -4,33 +4,31 @@ import android.support.annotation.NonNull;
 
 /**
  * Desction:
- * Author:pengjianbo  Dujinyang
+ * Author:pengjianbo
  * Date:16/7/31 上午9:15
  */
 public interface Job {
-    Result onRunJob();
-
-    enum Result {
+    public enum Result {
 
         SUCCESS(), FAILURE();
 
         private Object data;
 
-        Result() {
+        Result(){
+        }
+
+        public void setResultData(Object data){
+            this.data = data;
         }
 
         public Object getResultData() {
             return data;
         }
-
-        public void setResultData(Object data) {
-            this.data = data;
-        }
     }
 
-    class Params {
-        private final Object data;
-        private final String tag;
+    public class Params {
+        private Object data;
+        private String tag;
 
         public Params(@NonNull String tag, Object requestData) {
             this.tag = tag;
@@ -45,4 +43,6 @@ public interface Job {
             return data;
         }
     }
+
+    Result onRunJob();
 }
