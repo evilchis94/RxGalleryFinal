@@ -1,0 +1,22 @@
+<resources>
+    <string name="gallery_loading_view_click_loading_more">Cargar más</string>
+    <string name="gallery_loading_view_no_more">No hay más elementos</string>
+    <string name="gallery_loading_view_loading">Cargando…</string>
+
+    <string name="gallery_over_button_text">Seleccionar</string>
+    <string name="gallery_over_button_text_checked">Seleccionar %1$d/%2$d</string>
+    <string name="gallery_image_max_size_tip">Sólo puedes elegir %1$d imágenes</string>
+    <string name="gallery_page_title">%1$d/%2$d</string>
+    <string name="gallery_media_grid_image_title">Imágenes</string>
+    <string name="gallery_media_grid_video_title">Videos</string>
+    <string name="gallery_default_request_storage_access_permission_tips">La app solicita acceso para ver tu álbum</string>
+    <string name="gallery_default_media_empty_tips">Completamente vacío</string>
+    <string name="gallery_device_no_camera_tips">El dispositivo no tiene cámara</string>
+    <string name="gallery_device_camera_unable">Cámara no disponible</string>
+    <string name="gallery_preview_title">Vista previa</string>
+    <string name="gallery_all_image">Todas las imágenes</string>
+    <string name="gallery_all_video">Todos los videos</string>
+    <string name="gallery_take_image">Cámara</string>
+    <string name="gallery_image_selected">Seleccionado</string>
+    <string name="gallery_image_unit">imágenes</string>
+</resources>
